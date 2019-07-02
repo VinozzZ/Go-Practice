@@ -44,6 +44,7 @@ func main() {
 
 func reader(counter *int, rList *int, m *sync.RWMutex, wg *sync.WaitGroup) {
 	m.RLock()
+	sleep()
 	*rList++
 	fmt.Printf("Reader: %v, Value: %v\n", *rList, *counter)
 	m.RUnlock()
@@ -53,11 +54,16 @@ func reader(counter *int, rList *int, m *sync.RWMutex, wg *sync.WaitGroup) {
 
 func writer(counter *int, rList *int, m *sync.RWMutex, wg *sync.WaitGroup) {
 	m.Lock()
+	sleep()
 	for *rList > 0 {
-		 time.Sleep(time.Duration(rand.Intn(1000)) * time.Millisecond)
+		sleep()
 	}
 	*counter++
 	m.Unlock()
 	fmt.Printf("Writer: %v, Value: %v\n", *rList, *counter)
 	wg.Done()
+}
+
+func sleep() {
+	time.Sleep(time.Duration(rand.Intn(1000)) * time.Millisecond)
 }
